@@ -32,11 +32,12 @@ def _get_food_range(start_date, end_date):
 		FIRST = False
 	return foods
 
-DAYS = 1
+DAYS_OFFSET = 1
+DAYS = 7
 def fill_db(incl_today=True):
 	with lite.connect('food.db') as con:
 		c = con.cursor()
 		_create_tables(c)
 
-		for d,f in _get_food_range(datetime.datetime.now()-datetime.timedelta(days=DAYS), datetime.datetime.now()):
+		for d,f in _get_food_range(datetime.datetime.now()-datetime.timedelta(days=DAYS), datetime.datetime.now()-datetime.timedelta(days=DAYS_OFFSET)):
 			_populate(c, f, d)
