@@ -174,6 +174,7 @@ class Food():
 			for raw_food in v:
 				f = FoodItem(raw_food)
 				pufas = omega.get_pufas(f.name)
+				pufas = __pufa_hacks(pufas)
 				if pufas != None:
 					f.set_pufas(pufas)
 					print(f.n6, f.n3)

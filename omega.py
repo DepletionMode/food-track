@@ -41,6 +41,7 @@ def __lookup_usda(name):
 			('^.*(strawberry|strawberries)+.*$', 2430),
 			('^.*(cauliflower)+.*$', 2944),
 			('^.*(hummus)+.*$', 4860),
+			('^.*(cocoa)+.*(butter)+.*$', 654),
 	]
 
 	for regex,c in code_list:
