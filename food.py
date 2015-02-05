@@ -1,5 +1,6 @@
 import scrape_food
 import string
+import omega
 
 def __contains(s, m):
 	if s.find(m) > -1: return True
@@ -13,6 +14,13 @@ def __hack_typos(r):
 	r = r.replace(' gr', ' g')
 	r = r.replace('milliliters', 'ml')
 	r = r.replace(' fl oz', ' fl_oz')
+	return r
+
+def __hack_cornetto(r):
+	if __contains(r, 'cornetto') and __contains(r, 'disc') and __contains(r, 'cone'):
+		toks = r.split()
+		g = float(toks[-2]) * 370
+		r = '{}, {} g'.format(r.split(',')[0], g)
 	return r
 
 def __hack_lindt_excellence_85(r):
@@ -79,6 +87,17 @@ def __hack_challa(r):
 		r = '{}, {} g'.format(r.rsplit(',', 1)[0], g)
 	return r
 
+def __hack_entrecote(r):
+	return r.replace('entrecte', 'entrecote')
+
+def __hack_mcd_bbq_sauce(r):
+	if __contains(r, 'mcdonalds') and __contains(r, 'bbq'):
+		toks = r.split()
+		print(toks)
+		g = float(toks[-2]) * 50
+		r = '{}, {} g'.format(r.rsplit(',', 1)[0], g)
+	return r
+
 hacks = [
 		__hack_typos,
 		__hack_cabbage_savoy_shredded,
@@ -89,10 +108,14 @@ hacks = [
 		__hack_peppers_chopped,
 		__hack_hellmans_mayo,
 		__hack_challa,
-		__hack_goulash_soup
+		__hack_goulash_soup,
+		__hack_entrecote,
+		__hack_cornetto,
+		__hack_mcd_bbq_sauce,
 		]
 
 def hack(raw):
+	raw = raw.encode("ascii", 'ignore')
 	print(raw)
 	for h in hacks:
 		raw = h(raw.lower())
@@ -127,7 +150,17 @@ class FoodItem():
 		self.amount = convert_to_grams(amount)
 		self.calories, self.carbs, self.fat, self.protein, self.fibre, self.sugar = raw[1]
 		self.name = filter(lambda x: x in string.printable, self.name)
+		self.n3 = None
+		self.n6 = None
+		self.pufas_raw = None
 		print(self.name, self.amount)
+
+	def set_pufas(self, pufas):
+		self.pufas_raw = pufas[0]
+		for k,v in self.pufas_raw.items():
+			self.pufas_raw[k] = float(v)*self.amount/100
+		self.n6 = pufas[1][0]*self.amount/100
+		self.n3 = pufas[1][1]*self.amount/100
 
 class Food():
 	def __init__(self, date=None, login=True):
@@ -139,7 +172,12 @@ class Food():
 		for k,v in raw.items():
 			foods = []
 			for raw_food in v:
-				foods.append(FoodItem(raw_food))
+				f = FoodItem(raw_food)
+				pufas = omega.get_pufas(f.name)
+				if pufas != None:
+					f.set_pufas(pufas)
+					print(f.n6, f.n3)
+				foods.append(f)
 			self.meals[k.lower()] = foods
 
 # test

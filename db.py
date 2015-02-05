@@ -2,19 +2,27 @@ import food
 import sqlite3 as lite
 import datetime
 
-def _create_tables(c):
+def _drop_table(c, t):
 	try:
-		c.execute('DROP TABLE Food')
+		c.execute('DROP TABLE {}'.format(t))
 	except:
 		pass
+
+def _create_tables(c):
+	_drop_table(c, 'Food')
+	_drop_table(c, 'Pufas')
+
 	c.execute('CREATE TABLE Food (id INTEGER PRIMARY KEY, meal TEXT, name TEXT, amount TEXT, calories INT, carbs INT, fat INT, protein INT, fibre INT, sugar INT, date TEXT)')
+	c.execute('CREATE TABLE Pufas (id INTEGER PRIMARY KEY, foodid, n6 INT, n3 INT)')
 
 def _populate(c, food, date):
-	i = 1
 	for k,v in food.meals.items():
 		for f in v:
 			c.execute("INSERT INTO Food(meal,name,amount,calories,carbs,fat,protein,fibre,sugar,date) VALUES('{}','{}','{}',{},{},{},{},{},{},'{}')".format(k,f.name,f.amount,f.calories,f.carbs,f.fat,f.protein,f.fibre,f.sugar,date))
-			i += 1
+			if f.pufas_raw != None:
+				c.execute("SELECT max(id) from Food")
+				foodid = c.fetchone()[0]
+				c.execute("INSERT INTO Pufas(foodid, n6, n3) VALUES({},{},{})".format(foodid,f.n6,f.n3))
 
 def daterange(start_date, end_date):
     for n in range(int ((end_date - start_date).days+1)):
