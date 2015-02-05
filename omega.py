@@ -1,6 +1,7 @@
 from scrape_nutrients import *
 import re
 
+pufa_cache = {}
 def __lookup_usda(name):
 	code_list = [
 			# regex, code
@@ -54,12 +55,15 @@ def __lookup_usda(name):
 
 
 def get_pufas(food):
+	global pufa_cache
 	usda_num = __lookup_usda(food)
-
 	if usda_num == None:
 		return None
 
-	pufas = pull_pufas(usda_num)
+	pufas = pufa_cache.get(usda_num, None)
+	if pufas == None:
+		pufas = pull_pufas(usda_num)
+		pufa_cache[usda_num] = pufas
 	ratio = get_omega_ratio(pufas)
 
 	return pufas, ratio
