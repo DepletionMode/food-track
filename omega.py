@@ -1,7 +1,6 @@
 from scrape_nutrients import *
 import re
 
-pufa_cache = {}
 def __lookup_usda(name):
 	code_list = [
 			# regex, code
@@ -22,9 +21,11 @@ def __lookup_usda(name):
 			('^.*(soy)+.*(oil)+.*$', 745),
 			('^.*(beef)+.*(80)+.*$', 7562),
 			('^.*(beef)+.*(70)+.*$', 3956),
+			('^.*(suet)+.*$', 3826),
 			('^.*(steak|entrecote|asado)+.*$', 7315),
 			('^.*(milk)+.*(3)+.*$', 180),
 			('^.*(milk)+.*(1)+.*$', 154),
+			('^.*(1)+.*(milk)+.*$', 154),
 			('^.*(cheese)+.*(emek)+.*$', 40),	# swiss cheese?
 			('^.*(cheese)+.*(edam)+.*$', 18),
 			('^.*(cheddar)+.*$', 9),
@@ -41,7 +42,7 @@ def __lookup_usda(name):
 			('^.*(pistachio)+.*$', 3717),
 			('^.*(strawberry|strawberries)+.*$', 2430),
 			('^.*(cauliflower)+.*$', 2944),
-			('^.*(hummus)+.*$', 4860),
+			('^.*(hummus)+.*$', 4848),  # using value for home instead of commercial
 			('^.*(cocoa)+.*(butter)+.*$', 654),
 	]
 
@@ -53,9 +54,9 @@ def __lookup_usda(name):
 	
 	return None
 
-
+import copy
+pufa_cache = dict()
 def get_pufas(food):
-	global pufa_cache
 	usda_num = __lookup_usda(food)
 	if usda_num == None:
 		return None
@@ -63,7 +64,8 @@ def get_pufas(food):
 	pufas = pufa_cache.get(usda_num, None)
 	if pufas == None:
 		pufas = pull_pufas(usda_num)
-		pufa_cache[usda_num] = pufas
+		pufa_cache[usda_num] = copy.deepcopy(pufas)
+	pufas = copy.deepcopy(pufas)
 	ratio = get_omega_ratio(pufas)
 
 	return pufas, ratio

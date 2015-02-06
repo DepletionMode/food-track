@@ -11,6 +11,7 @@ def __hack_typos(r):
 	r = r.replace('tablespoon', 'tbsp')
 	r = r.replace(' grams', ' g')
 	r = r.replace(' gram', ' g')
+	r = r.replace(' gr.', ' g')
 	r = r.replace(' gr', ' g')
 	r = r.replace('milliliters', 'ml')
 	r = r.replace(' fl oz', ' fl_oz')
@@ -98,6 +99,14 @@ def __hack_mcd_bbq_sauce(r):
 		r = '{}, {} g'.format(r.rsplit(',', 1)[0], g)
 	return r
 
+def __hack_egg(r):
+	if __contains(r, 'egg') and __contains(r, 'boiled'):
+		toks = r.split()
+		print(toks)
+		g = float(toks[-2]) * 50
+		r = '{}, {} g'.format(r.rsplit(',', 1)[0], g)
+	return r
+
 hacks = [
 		__hack_typos,
 		__hack_cabbage_savoy_shredded,
@@ -112,6 +121,7 @@ hacks = [
 		__hack_entrecote,
 		__hack_cornetto,
 		__hack_mcd_bbq_sauce,
+                __hack_egg
 		]
 
 def hack(raw):

@@ -101,7 +101,9 @@ def __is_n3(pufa_name):
 
 	return False
 
+import copy
 def get_omega_ratio(pufas):
+	pufas = copy.deepcopy(pufas)
 	n3 = 0
 	n6 = 0
 	undiff = 0
