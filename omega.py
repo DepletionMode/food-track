@@ -6,6 +6,7 @@ def __lookup_usda(name):
 			# regex, code
 			('^.*(butter|ghee)+.*$', 132),
 			('^.*(salmon)+.*$', 4660),
+			('^.*(herring)+.*$', 4496),
 			('^.*(chicken)+.*(thigh)+.*(skin)+.*$', 1125),
 			('^.*(chicken)+.*(thigh)+.*$', 1116),
 			('^.*(chicken)+.*(drumstick)+.*(skin)+.*$', 1122),
