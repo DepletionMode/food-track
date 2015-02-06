@@ -17,10 +17,17 @@ def __hack_typos(r):
 	r = r.replace(' fl oz', ' fl_oz')
 	return r
 
+def __hack_solero_lite(r):
+	if __contains(r, 'solero') and __contains(r, 'lite'):
+		toks = r.split()
+		g = float(toks[-3]) * 370 # TODO
+		r = '{}, {} g'.format(r.split(',')[0], g)
+	return r
+
 def __hack_cornetto(r):
 	if __contains(r, 'cornetto') and __contains(r, 'disc') and __contains(r, 'cone'):
 		toks = r.split()
-		g = float(toks[-2]) * 370
+		g = float(toks[-2]) * 370 # TODO
 		r = '{}, {} g'.format(r.split(',')[0], g)
 	return r
 
@@ -120,6 +127,7 @@ hacks = [
 		__hack_goulash_soup,
 		__hack_entrecote,
 		__hack_cornetto,
+                __hack_solero_lite,
 		__hack_mcd_bbq_sauce,
                 __hack_egg
 		]
