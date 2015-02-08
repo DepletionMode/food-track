@@ -17,6 +17,11 @@ def __hack_typos(r):
 	r = r.replace(' fl oz', ' fl_oz')
 	return r
 
+def __hack_g_space(r):
+	if r[-1] == 'g' and r[-2] != ' ':
+		return r[:-1] + ' g'
+	return r
+
 def __hack_solero_lite(r):
 	if __contains(r, 'solero') and __contains(r, 'lite'):
 		toks = r.split()
@@ -127,9 +132,10 @@ hacks = [
 		__hack_goulash_soup,
 		__hack_entrecote,
 		__hack_cornetto,
-                __hack_solero_lite,
+		__hack_solero_lite,
 		__hack_mcd_bbq_sauce,
-                __hack_egg
+		__hack_egg,
+		__hack_g_space
 		]
 
 def hack(raw):
