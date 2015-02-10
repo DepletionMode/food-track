@@ -1,7 +1,21 @@
 from scrape_nutrients import *
 import re
 
+def __contains(s, m):
+	if s.find(m) > -1: return True
+	return False
+
+def __degredient(name):
+	names = []
+	if __contains(name, "lindt excellence 85%"):
+		names.append("cocoa butter");
+	else:
+		names.append(name)
+	return names
+
 def __lookup_usda(name):
+	names = __degredient(name)
+
 	code_list = [
 			# regex, code
 			('^.*(butter|ghee)+.*$', 132),
@@ -22,9 +36,9 @@ def __lookup_usda(name):
 			('^.*(soy)+.*(oil)+.*$', 745),
 			('^.*(canola)+.*(oil)+.*$', 745),
 			('^.*(oil)+.*(canola)+.*$', 695),
+			('^.*(suet)+.*$', 3826),
 			('^.*(beef)+.*(80)+.*$', 7562),
 			('^.*(beef)+.*(70)+.*$', 3956),
-			('^.*(suet)+.*$', 3826),
 			('^.*(steak|entrecote|asado)+.*$', 7315),
 			('^.*(milk)+.*(3)+.*$', 180),
 			('^.*(milk)+.*(1)+.*$', 154),
@@ -49,26 +63,32 @@ def __lookup_usda(name):
 			('^.*(cocoa)+.*(butter)+.*$', 654),
 	]
 
-	for regex,c in code_list:
-		p = re.compile(regex, re.IGNORECASE)
-		m = p.match(name)
-		if m != None:
-			return c
+	codes = []
+	for name in names:
+		for regex,c in code_list:
+			p = re.compile(regex, re.IGNORECASE)
+			m = p.match(name)
+			if m != None:
+				codes.append(c)
 	
-	return None
+	return codes
 
 import copy
 pufa_cache = dict()
 def get_pufas(food):
-	usda_num = __lookup_usda(food)
-	if usda_num == None:
+	usda_nums = __lookup_usda(food)
+	if len(usda_nums) == 0:
 		return None
 
-	pufas = pufa_cache.get(usda_num, None)
-	if pufas == None:
-		pufas = pull_pufas(usda_num)
-		pufa_cache[usda_num] = copy.deepcopy(pufas)
-	pufas = copy.deepcopy(pufas)
-	ratio = get_omega_ratio(pufas)
+	master_pufas = {}
 
-	return pufas, ratio
+	for usda_num in usda_nums:
+		pufas = pufa_cache.get(usda_num, None)
+		if pufas == None:
+			pufas = pull_pufas(usda_num)
+			pufa_cache[usda_num] = copy.deepcopy(pufas)
+		#pufas = copy.deepcopy(pufas)
+		for k,v in pufas.items():
+			master_pufas[k] = master_pufas.get(k, 0) + float(v)
+
+	return master_pufas, get_omega_ratio(master_pufas)
