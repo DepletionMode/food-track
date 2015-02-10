@@ -41,7 +41,7 @@ def _get_food_range(start_date, end_date):
 	return foods
 
 DAYS_OFFSET = 1
-DAYS = 7
+DAYS = 1
 def fill_db(incl_today=True):
 	with lite.connect('food.db') as con:
 		c = con.cursor()

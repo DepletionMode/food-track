@@ -8,9 +8,9 @@ def __contains(s, m):
 def __degredient(name):
 	names = []
 	if __contains(name, "lindt excellence 85%"):
-		names.append("cocoa butter");
+		names.append(("cocoa butter",0.5))
 	else:
-		names.append(name)
+		names.append((name,1))
 	return names
 
 def __lookup_usda(name):
@@ -64,12 +64,12 @@ def __lookup_usda(name):
 	]
 
 	codes = []
-	for name in names:
+	for name,factor in names:
 		for regex,c in code_list:
 			p = re.compile(regex, re.IGNORECASE)
 			m = p.match(name)
 			if m != None:
-				codes.append(c)
+				codes.append((c,factor))
 	
 	return codes
 
@@ -82,13 +82,13 @@ def get_pufas(food):
 
 	master_pufas = {}
 
-	for usda_num in usda_nums:
+	for usda_num, factor in usda_nums:
 		pufas = pufa_cache.get(usda_num, None)
 		if pufas == None:
 			pufas = pull_pufas(usda_num)
 			pufa_cache[usda_num] = copy.deepcopy(pufas)
 		#pufas = copy.deepcopy(pufas)
 		for k,v in pufas.items():
-			master_pufas[k] = master_pufas.get(k, 0) + float(v)
+			master_pufas[k] = master_pufas.get(k, 0) + float(v)*factor
 
 	return master_pufas, get_omega_ratio(master_pufas)
