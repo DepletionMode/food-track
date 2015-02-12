@@ -7,8 +7,14 @@ def __contains(s, m):
 
 def __degredient(name):
 	names = []
-	if __contains(name, "lindt excellence 85%"):
+	if __contains(name, "lindt excellence 85%") or __contains(name, "86% dark"):
 		names.append(("cocoa butter",0.5))
+	elif __contains(name, "bamba"):
+		names.append(("soy oil",0.15))
+	elif __contains(name, "dorito"):
+		names.append(("soy oil",0.15))
+	elif __contains(name, "magnum"):
+		names.append(("soy oil",0.10))
 	else:
 		names.append((name,1))
 	return names

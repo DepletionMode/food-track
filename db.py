@@ -1,3 +1,6 @@
+DAYS_OFFSET = 1
+DAYS = 7
+
 import food
 import sqlite3 as lite
 import datetime
@@ -18,6 +21,7 @@ def _create_tables(c):
 def _populate(c, food, date):
 	for k,v in food.meals.items():
 		for f in v:
+			#print("INSERT INTO Food(meal,name,amount,calories,carbs,fat,protein,fibre,sugar,date) VALUES('{}','{}','{}',{},{},{},{},{},{},'{}')".format(k,f.name,f.amount,f.calories,f.carbs,f.fat,f.protein,f.fibre,f.sugar,date))
 			c.execute("INSERT INTO Food(meal,name,amount,calories,carbs,fat,protein,fibre,sugar,date) VALUES('{}','{}','{}',{},{},{},{},{},{},'{}')".format(k,f.name,f.amount,f.calories,f.carbs,f.fat,f.protein,f.fibre,f.sugar,date))
 			if f.pufas_raw != None:
 				c.execute("SELECT max(id) from Food")
@@ -40,8 +44,6 @@ def _get_food_range(start_date, end_date):
 		FIRST = False
 	return foods
 
-DAYS_OFFSET = 1
-DAYS = 1
 def fill_db(incl_today=True):
 	with lite.connect('food.db') as con:
 		c = con.cursor()

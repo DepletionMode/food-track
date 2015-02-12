@@ -17,11 +17,6 @@ def __hack_typos(r):
 	r = r.replace(' fl oz', ' fl_oz')
 	return r
 
-def __hack_g_space(r):
-	if r[-1] == 'g' and r[-2] != ' ':
-		return r[:-1] + ' g'
-	return r
-
 def __hack_solero_lite(r):
 	if __contains(r, 'solero') and __contains(r, 'lite'):
 		toks = r.split()
@@ -132,10 +127,9 @@ hacks = [
 		__hack_goulash_soup,
 		__hack_entrecote,
 		__hack_cornetto,
-		__hack_solero_lite,
+                __hack_solero_lite,
 		__hack_mcd_bbq_sauce,
-		__hack_egg,
-		__hack_g_space
+                __hack_egg
 		]
 
 def hack(raw):
@@ -170,6 +164,7 @@ class FoodItem():
 
 	def __deserialize(self, raw):
 		name_amount = hack(raw[0])
+		name_amount = name_amount.replace("'","")
 		self.name, amount = [ x.strip() for x in name_amount.rsplit(',', 1) ]
 		self.amount = convert_to_grams(amount)
 		self.calories, self.carbs, self.fat, self.protein, self.fibre, self.sugar = raw[1]
